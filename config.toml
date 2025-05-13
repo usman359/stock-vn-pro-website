@@ -1,0 +1,7 @@
+[theme]
+base="dark"
+primaryColor="#FF6B6B"          # Soft Red
+backgroundColor="#121212"       # Deep Dark
+secondaryBackgroundColor="#1E1E1E"  # Slightly lighter dark
+textColor="#EAEAEA"             # Light Gray
+font="sans serif"               # Clean, readable font
