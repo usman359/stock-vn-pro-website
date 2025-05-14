@@ -1579,3 +1579,18 @@ a:hover {
     transform: rotate(360deg) scale(1);
   }
 }
+
+.real-time-chart-container {
+  position: relative;
+  width: 100%;
+  height: 400px; /* Increased from previous height */
+  margin-bottom: 1rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+#real-time-chart {
+  width: 100% !important;
+  height: 100% !important;
+}

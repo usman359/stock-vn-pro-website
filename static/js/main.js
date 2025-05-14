@@ -2863,8 +2863,11 @@ function setupNavigation() {
     // Show the target section
     section.classList.add("active-section");
 
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Scroll to top immediately
+    window.scrollTo(0, 0);
+
+    // Force a reflow to ensure proper positioning
+    section.offsetHeight;
 
     return true;
   }
