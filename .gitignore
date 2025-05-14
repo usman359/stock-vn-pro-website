@@ -1,0 +1,48 @@
+# Python virtual environment
+venv*/
+venv_py*/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+
+# Large files and directories
+*.dylib
+*.so
+*.dll
+*.exe
+
+# Logs
+*.log
+
+# Local development settings
+instance/
+.webassets-cache
+
+# Database
+*.db
+*.sqlite3
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 
