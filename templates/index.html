@@ -1,1203 +1,1758 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stock Vision Pro | Stock Market Forecasting App</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <!-- Three.js for 3D animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-chart-line me-2"></i>StockVision Pro
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="nav-home" href="#home-section">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="nav-forecast" href="#forecast-section">Forecast</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="nav-news" href="#news-section">News</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="nav-about" href="#about-section">About</a>
-                    </li>
-                </ul>
-            </div>
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-chart-line me-2"></i>StockVision Pro
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" id="nav-home" href="#home-section"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="nav-about" href="#about-section">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="nav-forecast" href="#forecast-section"
+                >Forecast</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="nav-news" href="#news-section">News</a>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link theme-toggle-btn" id="theme-toggle">
+                <i class="fas fa-moon"></i>
+              </button>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
 
     <!-- Main Container -->
     <div class="container-fluid p-0">
-        <!-- Home Section -->
-        <section id="home-section" class="section-page active-section">
-            <div class="hero-section">
-                <div class="overlay"></div>
-                <!-- Add video background with locally downloaded file -->
-                <div class="video-background">
-                    <video autoplay muted loop playsinline preload="auto" id="bg-video">
-                        <source src="{{ url_for('static', filename='videos/7580445-uhd_4096_2160_25fps.mp4') }}" type="video/mp4">
-                        <!-- Fallback to animated background if video doesn't load -->
-                    </video>
+      <!-- Home Section -->
+      <section id="home-section" class="section-page active-section">
+        <div class="hero-section">
+          <div class="overlay"></div>
+          <!-- Add video background with locally downloaded file -->
+          <div class="video-background">
+            <video autoplay muted loop playsinline preload="auto" id="bg-video">
+              <source
+                src="{{ url_for('static', filename='videos/7580445-uhd_4096_2160_25fps.mp4') }}"
+                type="video/mp4"
+              />
+              <!-- Fallback to animated background if video doesn't load -->
+            </video>
+          </div>
+          <!-- Animated gradient background as fallback -->
+          <div class="animated-bg">
+            <div class="chart chart1"></div>
+            <div class="chart chart2"></div>
+            <div class="chart chart3"></div>
+            <div class="chart chart4"></div>
+          </div>
+          <div class="video-overlay"></div>
+          <!-- End video background -->
+          <div class="container">
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <div class="hero-content" data-aos="fade-right">
+                  <h1>Next-Gen Stock Market Forecasting</h1>
+                  <p>
+                    Leverage the power of AI and machine learning to predict
+                    stock market trends with high accuracy. Make informed
+                    investment decisions with advanced analytics.
+                  </p>
+                  <button class="btn btn-primary btn-lg" id="get-started-btn">
+                    Get Started
+                  </button>
                 </div>
-                <!-- Animated gradient background as fallback -->
-                <div class="animated-bg">
-                    <div class="chart chart1"></div>
-                    <div class="chart chart2"></div>
-                    <div class="chart chart3"></div>
-                    <div class="chart chart4"></div>
+              </div>
+              <div class="col-md-6">
+                <div class="animation-container" data-aos="fade-left">
+                  <!-- 3D animation will be loaded here -->
+                  <div id="canvas-container"></div>
                 </div>
-                <div class="video-overlay"></div>
-                <!-- End video background -->
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <div class="hero-content" data-aos="fade-right">
-                                <h1>Next-Gen Stock Market Forecasting</h1>
-                                <p>Leverage the power of AI and machine learning to predict stock market trends with high accuracy. Make informed investment decisions with advanced analytics.</p>
-                                <button class="btn btn-primary btn-lg" id="get-started-btn">Get Started</button>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="animation-container" data-aos="fade-left">
-                                <!-- 3D animation will be loaded here -->
-                                <div id="canvas-container"></div>
-                            </div>
-                        </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="features-section">
+          <div class="container">
+            <h2 class="text-center mb-5" data-aos="fade-up">
+              Advanced Features
+            </h2>
+            <div class="row">
+              <div
+                class="col-md-4 mb-4"
+                data-aos="fade-up"
+                data-aos-delay="100"
+              >
+                <div class="feature-card">
+                  <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                  </div>
+                  <h3>AI Models</h3>
+                  <p>
+                    Choose from XGBoost, LSTM, and Prophet models to find the
+                    best prediction algorithm for your needs.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="col-md-4 mb-4"
+                data-aos="fade-up"
+                data-aos-delay="200"
+              >
+                <div class="feature-card">
+                  <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                  </div>
+                  <h3>Interactive Visualization</h3>
+                  <p>
+                    Explore stock data through interactive charts with real-time
+                    loading feedback and comprehensive analysis tools.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="col-md-4 mb-4"
+                data-aos="fade-up"
+                data-aos-delay="300"
+              >
+                <div class="feature-card">
+                  <div class="feature-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                  </div>
+                  <h3>Future Predictions</h3>
+                  <p>
+                    Get accurate forecasts for future stock prices to guide your
+                    investment strategy.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Forecast Section -->
+      <section id="forecast-section" class="section-page">
+        <div class="container">
+          <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+              <div class="forecast-sidebar">
+                <div class="sidebar-header" data-aos="fade-right">
+                  <h3>
+                    <i class="fas fa-sliders-h me-2"></i>Forecast Parameters
+                  </h3>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  data-aos="fade-right"
+                  data-aos-delay="100"
+                >
+                  <h4><i class="fas fa-calendar me-2"></i>Date Range</h4>
+                  <div class="mb-3">
+                    <label for="start-date" class="form-label"
+                      >Start Date</label
+                    >
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="start-date"
+                      value="2022-01-01"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="end-date" class="form-label">End Date</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="end-date"
+                      value="2025-03-08"
+                    />
+                  </div>
+                </div>
+
+                <div class="sidebar-section">
+                  <h4><i class="fas fa-building me-2"></i>Select Company</h4>
+                  <select class="form-select mb-3" id="ticker-select">
+                    <optgroup label="US Tech">
+                      <option value="AAPL.US">Apple (AAPL.US)</option>
+                      <option value="MSFT.US">Microsoft (MSFT.US)</option>
+                      <option value="GOOG.US">Alphabet/Google (GOOG.US)</option>
+                      <option value="META.US">Meta Platforms (META.US)</option>
+                      <option value="AMZN.US">Amazon (AMZN.US)</option>
+                      <option value="TSLA.US">Tesla (TSLA.US)</option>
+                      <option value="NVDA.US">NVIDIA (NVDA.US)</option>
+                      <option value="NFLX.US">Netflix (NFLX.US)</option>
+                      <option value="INTC.US">Intel (INTC.US)</option>
+                      <option value="AMD.US">AMD (AMD.US)</option>
+                    </optgroup>
+                    <optgroup label="US Finance">
+                      <option value="JPM.US">JPMorgan Chase (JPM.US)</option>
+                      <option value="BAC.US">Bank of America (BAC.US)</option>
+                      <option value="WFC.US">Wells Fargo (WFC.US)</option>
+                      <option value="GS.US">Goldman Sachs (GS.US)</option>
+                      <option value="V.US">Visa (V.US)</option>
+                      <option value="MA.US">Mastercard (MA.US)</option>
+                    </optgroup>
+                    <optgroup label="US Retail">
+                      <option value="WMT.US">Walmart (WMT.US)</option>
+                      <option value="TGT.US">Target (TGT.US)</option>
+                      <option value="HD.US">Home Depot (HD.US)</option>
+                      <option value="COST.US">Costco (COST.US)</option>
+                    </optgroup>
+                    <optgroup label="US Healthcare">
+                      <option value="JNJ.US">Johnson & Johnson (JNJ.US)</option>
+                      <option value="PFE.US">Pfizer (PFE.US)</option>
+                      <option value="UNH.US">UnitedHealth (UNH.US)</option>
+                      <option value="MRK.US">Merck (MRK.US)</option>
+                    </optgroup>
+                    <optgroup label="Yahoo Finance Available">
+                      <option value="AAPL">Apple (AAPL)</option>
+                      <option value="MSFT">Microsoft (MSFT)</option>
+                      <option value="GOOG">Alphabet (GOOG)</option>
+                      <option value="AMZN">Amazon (AMZN)</option>
+                      <option value="FB">Meta/Facebook (FB)</option>
+                      <option value="TSLA">Tesla (TSLA)</option>
+                      <option value="BRK-A">Berkshire Hathaway (BRK-A)</option>
+                      <option value="JPM">JPMorgan Chase (JPM)</option>
+                      <option value="JNJ">Johnson & Johnson (JNJ)</option>
+                      <option value="V">Visa (V)</option>
+                    </optgroup>
+                  </select>
+                  <div class="alert alert-info mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <small
+                      >Currently displaying data for:
+                      <span id="current-company-display"
+                        >Choose a company</span
+                      ></small
+                    >
+                  </div>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  data-aos="fade-right"
+                  data-aos-delay="300"
+                >
+                  <h4><i class="fas fa-brain me-2"></i>Select AI Model</h4>
+                  <select class="form-select mb-3" id="model-select">
+                    <option value="Transformer">Transformer</option>
+                    <option value="LSTM">LSTM</option>
+                    <option value="Prophet">Prophet</option>
+                  </select>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  id="transformer-params"
+                  style="display: block"
+                  data-aos="fade-right"
+                  data-aos-delay="400"
+                >
+                  <h4>
+                    <i class="fas fa-cogs me-2"></i>Transformer Parameters
+                  </h4>
+                  <div class="row mb-2">
+                    <div class="col-6">
+                      <label for="sequence-length" class="form-label small"
+                        >Sequence Length</label
+                      >
+                      <select
+                        class="form-select form-select-sm"
+                        id="sequence-length"
+                      >
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30" selected>30</option>
+                        <option value="40">40</option>
+                      </select>
+                      <div class="info-tip">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <small>Number of past days to analyze</small>
+                      </div>
                     </div>
+                    <div class="col-6">
+                      <label for="head-size" class="form-label small"
+                        >Head Size</label
+                      >
+                      <select class="form-select form-select-sm" id="head-size">
+                        <option value="64">64</option>
+                        <option value="128" selected>128</option>
+                        <option value="256">256</option>
+                      </select>
+                      <div class="info-tip">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <small>Model's pattern recognition power</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <label for="num-heads" class="form-label small"
+                        >Number of Heads</label
+                      >
+                      <select class="form-select form-select-sm" id="num-heads">
+                        <option value="2">2</option>
+                        <option value="4" selected>4</option>
+                        <option value="8">8</option>
+                      </select>
+                      <div class="info-tip">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <small>How many patterns analyzed simultaneously</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="alert alert-info small py-1">
+                    <i class="fas fa-info-circle me-1"></i> Temporal Fusion
+                    Transformer parameters
+                  </div>
                 </div>
+
+                <div
+                  class="sidebar-section"
+                  id="lstm-params"
+                  style="display: none"
+                  data-aos="fade-right"
+                  data-aos-delay="400"
+                >
+                  <h4><i class="fas fa-cogs me-2"></i>LSTM Parameters</h4>
+                  <div class="mb-3">
+                    <label for="seq-length" class="form-label"
+                      >Sequence Length</label
+                    >
+                    <input
+                      type="range"
+                      class="form-range"
+                      min="1"
+                      max="30"
+                      step="1"
+                      value="10"
+                      id="seq-length"
+                    />
+                    <div id="seq-length-value" class="text-center">10</div>
+                    <div class="info-tip">
+                      <i class="fas fa-info-circle me-2"></i>
+                      <small
+                        >How many past days the model uses to predict future
+                        values - longer isn't always better.</small
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  data-aos="fade-right"
+                  data-aos-delay="500"
+                >
+                  <button class="btn btn-primary w-100" id="fetch-data-btn">
+                    <i class="fas fa-download me-2"></i>Fetch Data
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div class="features-section">
-                <div class="container">
-                    <h2 class="text-center mb-5" data-aos="fade-up">Advanced Features</h2>
+            <!-- Main Content -->
+            <div class="col-lg-9">
+              <div class="forecast-content" data-aos="fade-up">
+                <div class="section-header">
+                  <h2>
+                    <i class="fas fa-chart-line me-2"></i
+                    ><span id="forecast-title"
+                      >Stock Forecasting Dashboard</span
+                    >
+                  </h2>
+                  <p>
+                    Analyze and forecast stock prices with advanced AI models
+                  </p>
+                  <div
+                    class="alert alert-primary mt-3"
+                    id="company-alert"
+                    style="display: none"
+                  >
+                    <i class="fas fa-building me-2"></i>Currently analyzing:
+                    <strong id="current-company-display"></strong>
+                  </div>
+                </div>
+
+                <!-- Data Section -->
+                <div
+                  class="content-card"
+                  id="data-section"
+                  style="display: none"
+                  data-aos="fade-up"
+                >
+                  <div class="card-header">
+                    <h3><i class="fas fa-table me-2"></i>Stock Data</h3>
+                  </div>
+                  <div class="card-body">
+                    <div id="data-info" class="alert alert-info"></div>
+
+                    <!-- Skeleton loader for data table -->
+                    <div
+                      id="data-skeleton"
+                      class="skeleton-loader-container"
+                      style="display: none"
+                    >
+                      <div class="skeleton-header skeleton-loader"></div>
+                      <div class="skeleton-row">
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                      </div>
+                      <div class="skeleton-row">
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                      </div>
+                      <div class="skeleton-row">
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                        <div class="skeleton-cell skeleton-loader"></div>
+                      </div>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table table-striped" id="data-table">
+                        <thead>
+                          <tr id="table-header"></tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                      </table>
+                    </div>
+
+                    <div
+                      class="mt-3 d-flex justify-content-between align-items-center"
+                    >
+                      <div>
+                        <button
+                          class="btn btn-sm btn-outline-secondary"
+                          id="export-csv"
+                          disabled
+                        >
+                          <i class="fas fa-file-download me-1"></i>Export CSV
+                        </button>
+                      </div>
+                      <div class="data-summary small text-muted">
+                        <!-- Summary details will be added dynamically -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Visualization Section -->
+                <div
+                  class="content-card"
+                  id="viz-section"
+                  style="display: none"
+                  data-aos="fade-up"
+                >
+                  <div class="card-header">
+                    <h3>
+                      <i class="fas fa-chart-area me-2"></i>Data Visualization
+                    </h3>
+                  </div>
+                  <div class="card-body">
+                    <!-- Skeleton loader for chart -->
+                    <div
+                      id="plot-skeleton"
+                      class="skeleton-plot skeleton-loader"
+                      style="display: none"
+                    ></div>
+
+                    <div id="stock-plot" class="plot-container"></div>
+
+                    <div class="mb-3 mt-4">
+                      <label for="column-select" class="form-label"
+                        >Select Column for Forecasting</label
+                      >
+                      <select class="form-select" id="column-select"></select>
+                    </div>
+
+                    <div class="mt-4">
+                      <h4>
+                        <i class="fas fa-chart-line me-2"></i>Technical
+                        Indicators
+                      </h4>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="show-ma"
+                              checked
+                            />
+                            <label class="form-check-label" for="show-ma">
+                              Moving Average
+                            </label>
+                            <div class="info-tip">
+                              <i class="fas fa-info-circle me-1"></i>
+                              <small
+                                >Smooths price data to identify trends</small
+                              >
+                            </div>
+                            <select
+                              class="form-select form-select-sm mt-1"
+                              id="ma-period"
+                            >
+                              <option value="5">5 days</option>
+                              <option value="10" selected>10 days</option>
+                              <option value="20">20 days</option>
+                              <option value="50">50 days</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="show-bollinger"
+                            />
+                            <label
+                              class="form-check-label"
+                              for="show-bollinger"
+                            >
+                              Bollinger Bands
+                            </label>
+                            <div class="info-tip">
+                              <i class="fas fa-info-circle me-1"></i>
+                              <small
+                                >Shows price volatility and potential
+                                reversals</small
+                              >
+                            </div>
+                            <select
+                              class="form-select form-select-sm mt-1"
+                              id="bollinger-period"
+                            >
+                              <option value="10">10 days</option>
+                              <option value="20" selected>20 days</option>
+                              <option value="30">30 days</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="show-rsi"
+                            />
+                            <label class="form-check-label" for="show-rsi">
+                              RSI
+                            </label>
+                            <div class="info-tip">
+                              <i class="fas fa-info-circle me-1"></i>
+                              <small
+                                >Indicates overbought/oversold conditions</small
+                              >
+                            </div>
+                            <select
+                              class="form-select form-select-sm mt-1"
+                              id="rsi-period"
+                            >
+                              <option value="7">7 days</option>
+                              <option value="14" selected>14 days</option>
+                              <option value="21">21 days</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="d-grid mt-3">
+                        <button
+                          class="btn btn-primary btn-sm"
+                          id="apply-indicators"
+                        >
+                          <i class="fas fa-sync-alt me-2"></i>Apply Indicators
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Technical Indicators Section -->
+                <div
+                  class="content-card"
+                  id="indicators-section"
+                  style="display: none"
+                  data-aos="fade-up"
+                >
+                  <div class="card-header">
+                    <h3>
+                      <i class="fas fa-chart-bar me-2"></i>Technical Analysis
+                    </h3>
+                  </div>
+                  <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                            <div class="feature-card">
-                                <div class="feature-icon">
-                                    <i class="fas fa-robot"></i>
-                                </div>
-                                <h3>AI Models</h3>
-                                <p>Choose from XGBoost, LSTM, and Prophet models to find the best prediction algorithm for your needs.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                            <div class="feature-card">
-                                <div class="feature-icon">
-                                    <i class="fas fa-chart-bar"></i>
-                                </div>
-                                <h3>Interactive Visualization</h3>
-                                <p>Explore stock data through interactive charts with real-time loading feedback and comprehensive analysis tools.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                            <div class="feature-card">
-                                <div class="feature-icon">
-                                    <i class="fas fa-calendar-alt"></i>
-                                </div>
-                                <h3>Future Predictions</h3>
-                                <p>Get accurate forecasts for future stock prices to guide your investment strategy.</p>
-                            </div>
-                        </div>
+                      <div class="col-md-6">
+                        <div id="rsi-plot" class="plot-container"></div>
+                      </div>
+                      <div class="col-md-6">
+                        <div id="volume-plot" class="plot-container"></div>
+                      </div>
                     </div>
+                    <div class="row mt-4">
+                      <div class="col-md-6">
+                        <div class="card">
+                          <div class="card-header">
+                            <h5>Technical Summary</h5>
+                            <div class="info-tip">
+                              <i class="fas fa-info-circle me-1"></i>
+                              <small
+                                >Combined analysis of technical indicators to
+                                guide trading decisions</small
+                              >
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div id="tech-summary" class="technical-summary">
+                              <div
+                                class="signal-row d-flex justify-content-between mb-2"
+                              >
+                                <span>RSI (14)</span>
+                                <span id="rsi-value">--</span>
+                                <span id="rsi-signal" class="signal"></span>
+                              </div>
+                              <div
+                                class="signal-row d-flex justify-content-between mb-2"
+                              >
+                                <span>MACD</span>
+                                <span id="macd-value">--</span>
+                                <span id="macd-signal" class="signal"></span>
+                              </div>
+                              <div
+                                class="signal-row d-flex justify-content-between mb-2"
+                              >
+                                <span>Bollinger Bands</span>
+                                <span id="bb-value">--</span>
+                                <span id="bb-signal" class="signal"></span>
+                              </div>
+                              <div
+                                class="signal-row d-flex justify-content-between mb-2"
+                              >
+                                <span>Overall</span>
+                                <span
+                                  id="overall-signal"
+                                  class="signal bold"
+                                ></span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="card">
+                          <div class="card-header">
+                            <h5>Support & Resistance</h5>
+                            <div class="info-tip">
+                              <i class="fas fa-info-circle me-1"></i>
+                              <small
+                                >Price levels where stocks tend to stop and
+                                reverse direction</small
+                              >
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div class="row">
+                              <div class="col-6">
+                                <h6>Resistance</h6>
+                                <ul
+                                  class="list-unstyled"
+                                  id="resistance-levels"
+                                >
+                                  <li id="r3">R3: <span>--</span></li>
+                                  <li id="r2">R2: <span>--</span></li>
+                                  <li id="r1">R1: <span>--</span></li>
+                                </ul>
+                              </div>
+                              <div class="col-6">
+                                <h6>Support</h6>
+                                <ul class="list-unstyled" id="support-levels">
+                                  <li id="s1">S1: <span>--</span></li>
+                                  <li id="s2">S2: <span>--</span></li>
+                                  <li id="s3">S3: <span>--</span></li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Forecast Section -->
-        <section id="forecast-section" class="section-page">
-            <div class="container">
-                <div class="row">
-                    <!-- Sidebar -->
-                    <div class="col-lg-3">
-                        <div class="forecast-sidebar">
-                            <div class="sidebar-header" data-aos="fade-right">
-                                <h3><i class="fas fa-sliders-h me-2"></i>Forecast Parameters</h3>
-                            </div>
-                            
-                            <div class="sidebar-section" data-aos="fade-right" data-aos-delay="100">
-                                <h4><i class="fas fa-calendar me-2"></i>Date Range</h4>
-                                <div class="mb-3">
-                                    <label for="start-date" class="form-label">Start Date</label>
-                                    <input type="date" class="form-control" id="start-date" value="2022-01-01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="end-date" class="form-label">End Date</label>
-                                    <input type="date" class="form-control" id="end-date" value="2025-03-08">
-                                </div>
-                            </div>
-                            
-                            <div class="sidebar-section">
-                                <h4><i class="fas fa-building me-2"></i>Select Company</h4>
-                                <select class="form-select mb-3" id="ticker-select">
-                                    <optgroup label="US Tech">
-                                        <option value="AAPL.US">Apple (AAPL.US)</option>
-                                        <option value="MSFT.US">Microsoft (MSFT.US)</option>
-                                        <option value="GOOG.US">Alphabet/Google (GOOG.US)</option>
-                                        <option value="META.US">Meta Platforms (META.US)</option>
-                                        <option value="AMZN.US">Amazon (AMZN.US)</option>
-                                        <option value="TSLA.US">Tesla (TSLA.US)</option>
-                                        <option value="NVDA.US">NVIDIA (NVDA.US)</option>
-                                        <option value="NFLX.US">Netflix (NFLX.US)</option>
-                                        <option value="INTC.US">Intel (INTC.US)</option>
-                                        <option value="AMD.US">AMD (AMD.US)</option>
-                                    </optgroup>
-                                    <optgroup label="US Finance">
-                                        <option value="JPM.US">JPMorgan Chase (JPM.US)</option>
-                                        <option value="BAC.US">Bank of America (BAC.US)</option>
-                                        <option value="WFC.US">Wells Fargo (WFC.US)</option>
-                                        <option value="GS.US">Goldman Sachs (GS.US)</option>
-                                        <option value="V.US">Visa (V.US)</option>
-                                        <option value="MA.US">Mastercard (MA.US)</option>
-                                    </optgroup>
-                                    <optgroup label="US Retail">
-                                        <option value="WMT.US">Walmart (WMT.US)</option>
-                                        <option value="TGT.US">Target (TGT.US)</option>
-                                        <option value="HD.US">Home Depot (HD.US)</option>
-                                        <option value="COST.US">Costco (COST.US)</option>
-                                    </optgroup>
-                                    <optgroup label="US Healthcare">
-                                        <option value="JNJ.US">Johnson & Johnson (JNJ.US)</option>
-                                        <option value="PFE.US">Pfizer (PFE.US)</option>
-                                        <option value="UNH.US">UnitedHealth (UNH.US)</option>
-                                        <option value="MRK.US">Merck (MRK.US)</option>
-                                    </optgroup>
-                                    <optgroup label="Yahoo Finance Available">
-                                        <option value="AAPL">Apple (AAPL)</option>
-                                        <option value="MSFT">Microsoft (MSFT)</option>
-                                        <option value="GOOG">Alphabet (GOOG)</option>
-                                        <option value="AMZN">Amazon (AMZN)</option>
-                                        <option value="FB">Meta/Facebook (FB)</option>
-                                        <option value="TSLA">Tesla (TSLA)</option>
-                                        <option value="BRK-A">Berkshire Hathaway (BRK-A)</option>
-                                        <option value="JPM">JPMorgan Chase (JPM)</option>
-                                        <option value="JNJ">Johnson & Johnson (JNJ)</option>
-                                        <option value="V">Visa (V)</option>
-                                    </optgroup>
-                                </select>
-                                <div class="alert alert-info mb-3">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <small>Currently displaying data for: <span id="current-company-display">Choose a company</span></small>
-                                </div>
-                            </div>
-                            
-                            <div class="sidebar-section" data-aos="fade-right" data-aos-delay="300">
-                                <h4><i class="fas fa-brain me-2"></i>Select AI Model</h4>
-                                <select class="form-select mb-3" id="model-select">
-                                    <option value="Transformer">Transformer</option>
-                                    <option value="LSTM">LSTM</option>
-                                    <option value="Prophet">Prophet</option>
-                                </select>
-                            </div>
-                            
-                            <div class="sidebar-section" id="transformer-params" style="display:block;" data-aos="fade-right" data-aos-delay="400">
-                                <h4><i class="fas fa-cogs me-2"></i>Transformer Parameters</h4>
-                                <div class="row mb-2">
-                                    <div class="col-6">
-                                        <label for="sequence-length" class="form-label small">Sequence Length</label>
-                                        <select class="form-select form-select-sm" id="sequence-length">
-                                            <option value="10">10</option>
-                                            <option value="20">20</option>
-                                            <option value="30" selected>30</option>
-                                            <option value="40">40</option>
-                                        </select>
-                                        <div class="info-tip">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            <small>Number of past days to analyze</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="head-size" class="form-label small">Head Size</label>
-                                        <select class="form-select form-select-sm" id="head-size">
-                                            <option value="64">64</option>
-                                            <option value="128" selected>128</option>
-                                            <option value="256">256</option>
-                                        </select>
-                                        <div class="info-tip">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            <small>Model's pattern recognition power</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        <label for="num-heads" class="form-label small">Number of Heads</label>
-                                        <select class="form-select form-select-sm" id="num-heads">
-                                            <option value="2">2</option>
-                                            <option value="4" selected>4</option>
-                                            <option value="8">8</option>
-                                        </select>
-                                        <div class="info-tip">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            <small>How many patterns analyzed simultaneously</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="alert alert-info small py-1">
-                                    <i class="fas fa-info-circle me-1"></i> Temporal Fusion Transformer parameters
-                                </div>
-                            </div>
-                            
-                            <div class="sidebar-section" id="lstm-params" style="display:none;" data-aos="fade-right" data-aos-delay="400">
-                                <h4><i class="fas fa-cogs me-2"></i>LSTM Parameters</h4>
-                                <div class="mb-3">
-                                    <label for="seq-length" class="form-label">Sequence Length</label>
-                                    <input type="range" class="form-range" min="1" max="30" step="1" value="10" id="seq-length">
-                                    <div id="seq-length-value" class="text-center">10</div>
-                                    <div class="info-tip">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <small>How many past days the model uses to predict future values - longer isn't always better.</small>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="sidebar-section" data-aos="fade-right" data-aos-delay="500">
-                                <button class="btn btn-primary w-100" id="fetch-data-btn">
-                                    <i class="fas fa-download me-2"></i>Fetch Data
-                                </button>
-                            </div>
-                        </div>
+                <!-- Stationarity Section -->
+                <div
+                  class="content-card"
+                  id="stationarity-section"
+                  style="display: none"
+                  data-aos="fade-up"
+                >
+                  <div class="card-header">
+                    <h3>
+                      <i class="fas fa-check-circle me-2"></i>Data Stationarity
+                    </h3>
+                  </div>
+                  <div class="card-body">
+                    <div id="stationarity-result" class="alert"></div>
+                    <div class="info-tip">
+                      <i class="fas fa-info-circle me-2"></i>
+                      Stationarity means data properties don't change over time
+                      - it's important for reliable predictions.
                     </div>
-                    
-                    <!-- Main Content -->
-                    <div class="col-lg-9">
-                        <div class="forecast-content" data-aos="fade-up">
-                            <div class="section-header">
-                                <h2><i class="fas fa-chart-line me-2"></i><span id="forecast-title">Stock Forecasting Dashboard</span></h2>
-                                <p>Analyze and forecast stock prices with advanced AI models</p>
-                                <div class="alert alert-primary mt-3" id="company-alert" style="display: none;">
-                                    <i class="fas fa-building me-2"></i>Currently analyzing: <strong id="current-company-display"></strong>
-                                </div>
-                            </div>
-                            
-                            <!-- Data Section -->
-                            <div class="content-card" id="data-section" style="display:none;" data-aos="fade-up">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-table me-2"></i>Stock Data</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div id="data-info" class="alert alert-info"></div>
-                                    
-                                    <!-- Skeleton loader for data table -->
-                                    <div id="data-skeleton" class="skeleton-loader-container" style="display:none;">
-                                        <div class="skeleton-header skeleton-loader"></div>
-                                        <div class="skeleton-row">
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                        </div>
-                                        <div class="skeleton-row">
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                        </div>
-                                        <div class="skeleton-row">
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                            <div class="skeleton-cell skeleton-loader"></div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="table-responsive">
-                                        <table class="table table-striped" id="data-table">
-                                            <thead>
-                                                <tr id="table-header"></tr>
-                                            </thead>
-                                            <tbody id="table-body"></tbody>
-                                        </table>
-                                    </div>
-                                    
-                                    <div class="mt-3 d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <button class="btn btn-sm btn-outline-secondary" id="export-csv" disabled>
-                                                <i class="fas fa-file-download me-1"></i>Export CSV
-                                            </button>
-                                        </div>
-                                        <div class="data-summary small text-muted">
-                                            <!-- Summary details will be added dynamically -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Visualization Section -->
-                            <div class="content-card" id="viz-section" style="display:none;" data-aos="fade-up">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-chart-area me-2"></i>Data Visualization</h3>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Skeleton loader for chart -->
-                                    <div id="plot-skeleton" class="skeleton-plot skeleton-loader" style="display:none;"></div>
-                                    
-                                    <div id="stock-plot" class="plot-container"></div>
-                                    
-                                    <div class="mb-3 mt-4">
-                                        <label for="column-select" class="form-label">Select Column for Forecasting</label>
-                                        <select class="form-select" id="column-select"></select>
-                                    </div>
-                                    
-                                    <div class="mt-4">
-                                        <h4><i class="fas fa-chart-line me-2"></i>Technical Indicators</h4>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="show-ma" checked>
-                                                    <label class="form-check-label" for="show-ma">
-                                                        Moving Average
-                                                    </label>
-                                                    <div class="info-tip">
-                                                        <i class="fas fa-info-circle me-1"></i>
-                                                        <small>Smooths price data to identify trends</small>
-                                                    </div>
-                                                    <select class="form-select form-select-sm mt-1" id="ma-period">
-                                                        <option value="5">5 days</option>
-                                                        <option value="10" selected>10 days</option>
-                                                        <option value="20">20 days</option>
-                                                        <option value="50">50 days</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="show-bollinger">
-                                                    <label class="form-check-label" for="show-bollinger">
-                                                        Bollinger Bands
-                                                    </label>
-                                                    <div class="info-tip">
-                                                        <i class="fas fa-info-circle me-1"></i>
-                                                        <small>Shows price volatility and potential reversals</small>
-                                                    </div>
-                                                    <select class="form-select form-select-sm mt-1" id="bollinger-period">
-                                                        <option value="10">10 days</option>
-                                                        <option value="20" selected>20 days</option>
-                                                        <option value="30">30 days</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="show-rsi">
-                                                    <label class="form-check-label" for="show-rsi">
-                                                        RSI
-                                                    </label>
-                                                    <div class="info-tip">
-                                                        <i class="fas fa-info-circle me-1"></i>
-                                                        <small>Indicates overbought/oversold conditions</small>
-                                                    </div>
-                                                    <select class="form-select form-select-sm mt-1" id="rsi-period">
-                                                        <option value="7">7 days</option>
-                                                        <option value="14" selected>14 days</option>
-                                                        <option value="21">21 days</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="d-grid mt-3">
-                                            <button class="btn btn-primary btn-sm" id="apply-indicators">
-                                                <i class="fas fa-sync-alt me-2"></i>Apply Indicators
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Technical Indicators Section -->
-                            <div class="content-card" id="indicators-section" style="display:none;" data-aos="fade-up">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-chart-bar me-2"></i>Technical Analysis</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div id="rsi-plot" class="plot-container"></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div id="volume-plot" class="plot-container"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-4">
-                                        <div class="col-md-6">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h5>Technical Summary</h5>
-                                                    <div class="info-tip">
-                                                        <i class="fas fa-info-circle me-1"></i>
-                                                        <small>Combined analysis of technical indicators to guide trading decisions</small>
-                                                    </div>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div id="tech-summary" class="technical-summary">
-                                                        <div class="signal-row d-flex justify-content-between mb-2">
-                                                            <span>RSI (14)</span>
-                                                            <span id="rsi-value">--</span>
-                                                            <span id="rsi-signal" class="signal"></span>
-                                                        </div>
-                                                        <div class="signal-row d-flex justify-content-between mb-2">
-                                                            <span>MACD</span>
-                                                            <span id="macd-value">--</span>
-                                                            <span id="macd-signal" class="signal"></span>
-                                                        </div>
-                                                        <div class="signal-row d-flex justify-content-between mb-2">
-                                                            <span>Bollinger Bands</span>
-                                                            <span id="bb-value">--</span>
-                                                            <span id="bb-signal" class="signal"></span>
-                                                        </div>
-                                                        <div class="signal-row d-flex justify-content-between mb-2">
-                                                            <span>Overall</span>
-                                                            <span id="overall-signal" class="signal bold"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h5>Support & Resistance</h5>
-                                                    <div class="info-tip">
-                                                        <i class="fas fa-info-circle me-1"></i>
-                                                        <small>Price levels where stocks tend to stop and reverse direction</small>
-                                                    </div>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <h6>Resistance</h6>
-                                                            <ul class="list-unstyled" id="resistance-levels">
-                                                                <li id="r3">R3: <span>--</span></li>
-                                                                <li id="r2">R2: <span>--</span></li>
-                                                                <li id="r1">R1: <span>--</span></li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <h6>Support</h6>
-                                                            <ul class="list-unstyled" id="support-levels">
-                                                                <li id="s1">S1: <span>--</span></li>
-                                                                <li id="s2">S2: <span>--</span></li>
-                                                                <li id="s3">S3: <span>--</span></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Stationarity Section -->
-                            <div class="content-card" id="stationarity-section" style="display:none;" data-aos="fade-up">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-check-circle me-2"></i>Data Stationarity</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div id="stationarity-result" class="alert"></div>
-                                    <div class="info-tip">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        Stationarity means data properties don't change over time - it's important for reliable predictions.
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Decomposition Section -->
-                            <div class="content-card" id="decomposition-section" style="display:none;" data-aos="fade-up">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-puzzle-piece me-2"></i>Time Series Decomposition</h3>
-                                    <div class="info-tip">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        Breaks down stock price into trend, seasonal patterns, and random fluctuations
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="tabs">
-                                        <ul class="nav nav-tabs" id="decompositionTabs" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="trend-tab" data-bs-toggle="tab" data-bs-target="#trend-content" type="button" role="tab">Trend</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="seasonal-tab" data-bs-toggle="tab" data-bs-target="#seasonal-content" type="button" role="tab">Seasonality</button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="residual-tab" data-bs-toggle="tab" data-bs-target="#residual-content" type="button" role="tab">Residuals</button>
-                                            </li>
-                                        </ul>
-                                        
-                                        <div class="tab-content" id="decompositionTabContent">
-                                            <div class="tab-pane fade show active" id="trend-content" role="tabpanel">
-                                                <div id="trend-plot" class="plot-container"></div>
-                                            </div>
-                                            <div class="tab-pane fade" id="seasonal-content" role="tabpanel">
-                                                <div id="seasonal-plot" class="plot-container"></div>
-                                            </div>
-                                            <div class="tab-pane fade" id="residual-content" role="tabpanel">
-                                                <div id="residual-plot" class="plot-container"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Model Section -->
-                            <div class="content-card" id="model-section" style="display:none;" data-aos="fade-up">
-                                <div class="card-header">
-                                    <h3 id="model-title"><i class="fas fa-brain me-2"></i>Model Results</h3>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Advanced loading spinner -->
-                                    <div id="model-loading" class="spinner-container" style="display:none;">
-                                        <div class="fancy-spinner">
-                                            <div class="ring"></div>
-                                            <div class="ring"></div>
-                                            <div class="ring"></div>
-                                            <div class="dot"></div>
-                                        </div>
-                                        <p class="mt-3 text-center" id="model-loading-text">Training model...</p>
-                                        <div class="loading-progress">
-                                            <div class="loading-progress-bar" id="model-progress-bar"></div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Performance Metrics -->
-                                    <div class="row metrics-row" id="metrics-section">
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="metric-card">
-                                                <h5>MAE</h5>
-                                                <p id="mae-value"></p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="metric-card">
-                                                <h5>MSE</h5>
-                                                <p id="mse-value"></p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="metric-card">
-                                                <h5>RMSE</h5>
-                                                <p id="rmse-value"></p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="metric-card">
-                                                <h5>R² Score</h5>
-                                                <p id="r2-value"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Model Plots -->
-                                    <div id="prediction-plot" class="plot-container"></div>
-                                    <div id="components-plot" class="plot-container" style="display:none;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- News Section -->
-        <section id="news-section" class="section-page">
-            <div class="container">
-                <div class="row">
-                    <!-- Sidebar for News -->
-                    <div class="col-lg-3">
-                        <div class="news-sidebar">
-                            <div class="sidebar-header" data-aos="fade-right">
-                                <h3><i class="fas fa-newspaper me-2"></i>Company News</h3>
-                            </div>
-                            
-                            <div class="sidebar-section" data-aos="fade-right" data-aos-delay="100">
-                                <h4><i class="fas fa-search me-2"></i>Company Lookup</h4>
-                                <div class="mb-3">
-                                    <label for="ticker-search" class="form-label">Select Company</label>
-                                    <select class="form-select mb-2" id="news-ticker-select">
-                                        <option value="AAPL.US">Apple (AAPL.US)</option>
-                                        <option value="MSFT.US">Microsoft (MSFT.US)</option>
-                                        <option value="GOOG.US">Google (GOOG.US)</option>
-                                        <option value="META.US">Meta (META.US)</option>
-                                        <option value="TSLA.US">Tesla (TSLA.US)</option>
-                                        <option value="NVDA.US">NVIDIA (NVDA.US)</option>
-                                        <option value="ADBE.US">Adobe (ADBE.US)</option>
-                                        <option value="PYPL.US">PayPal (PYPL.US)</option>
-                                        <option value="INTC.US">Intel (INTC.US)</option>
-                                        <option value="CMCSA.US">Comcast (CMCSA.US)</option>
-                                        <option value="NFLX.US">Netflix (NFLX.US)</option>
-                                        <option value="PEP.US">PepsiCo (PEP.US)</option>
-                                    </select>
-                                    <div class="input-group custom-ticker-input">
-                                        <input type="text" class="form-control" id="custom-ticker" placeholder="Custom ticker symbol...">
-                                        <button class="btn btn-outline-primary" type="button" id="use-custom-ticker">Use</button>
-                                    </div>
-                                    <div class="form-text">Enter a custom ticker if not in the list above.</div>
-                                </div>
-                            </div>
-                            
-                            <div class="sidebar-section" data-aos="fade-right" data-aos-delay="200">
-                                <h4><i class="fas fa-filter me-2"></i>News Filters</h4>
-                                <div class="mb-3">
-                                    <label for="news-date-range" class="form-label">Date Range</label>
-                                    <select class="form-select" id="news-date-range">
-                                        <option value="1">Last 24 hours</option>
-                                        <option value="7" selected>Last 7 days</option>
-                                        <option value="30">Last 30 days</option>
-                                        <option value="90">Last 3 months</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="news-category" class="form-label">Category</label>
-                                    <select class="form-select" id="news-category">
-                                        <option value="all" selected>All News</option>
-                                        <option value="general">General</option>
-                                        <option value="financial">Financial</option>
-                                        <option value="business">Business</option>
-                                        <option value="technology">Technology</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="sidebar-section" data-aos="fade-right" data-aos-delay="300">
-                                <button class="btn btn-primary w-100" id="fetch-news-btn">
-                                    <i class="fas fa-sync-alt me-2"></i>Get News
-                                </button>
-                            </div>
-                            
-                            <div class="sidebar-section" data-aos="fade-right" data-aos-delay="400">
-                                <h4><i class="fas fa-chart-pie me-2"></i>Sentiment Analysis</h4>
-                                <div class="sentiment-chart-container">
-                                    <canvas id="sentiment-chart"></canvas>
-                                </div>
-                                <div class="text-center mt-2 small" id="sentiment-summary">
-                                    <!-- Sentiment summary will be added dynamically -->
-                                </div>
-                            </div>
-                        </div>
+                <!-- Decomposition Section -->
+                <div
+                  class="content-card"
+                  id="decomposition-section"
+                  style="display: none"
+                  data-aos="fade-up"
+                >
+                  <div class="card-header">
+                    <h3>
+                      <i class="fas fa-puzzle-piece me-2"></i>Time Series
+                      Decomposition
+                    </h3>
+                    <div class="info-tip">
+                      <i class="fas fa-info-circle me-2"></i>
+                      Breaks down stock price into trend, seasonal patterns, and
+                      random fluctuations
                     </div>
-                    
-                    <!-- Main News Content -->
-                    <div class="col-lg-9">
-                        <div class="news-content" data-aos="fade-up">
-                            <div class="section-header">
-                                <h2><i class="fas fa-newspaper me-2"></i>Latest Company News</h2>
-                                <p>Stay updated with the latest news and developments</p>
-                            </div>
-                            
-                            <!-- News Loading State -->
-                            <div id="news-loading" class="text-center p-5" style="display: none;">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-3">Fetching the latest news...</p>
-                            </div>
-                            
-                            <!-- News Error State -->
-                            <div id="news-error" class="alert alert-danger" style="display: none;">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                <span id="news-error-message">Unable to fetch news. Please try again later.</span>
-                            </div>
-                            
-                            <!-- Empty State -->
-                            <div id="news-empty" class="text-center p-5" style="display: none;">
-                                <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
-                                <h4>No News Found</h4>
-                                <p>There are no recent news articles for this company in the selected time period.</p>
-                                <button class="btn btn-outline-primary mt-3" id="try-different-filters">
-                                    Try Different Filters
-                                </button>
-                            </div>
-                            
-                            <!-- News Results -->
-                            <div id="news-results" style="display: none;">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div class="news-stats">
-                                        <span class="badge bg-primary" id="news-count">0 articles</span>
-                                        <span class="text-muted" id="news-company"></span>
-                                    </div>
-                                    <div class="news-sort">
-                                        <label class="me-2">Sort by:</label>
-                                        <select class="form-select form-select-sm d-inline-block w-auto" id="news-sort">
-                                            <option value="date">Date (Newest)</option>
-                                            <option value="relevance">Relevance</option>
-                                            <option value="sentiment">Sentiment</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <!-- News Articles Container -->
-                                <div id="news-articles" class="news-articles-grid">
-                                    <!-- News articles will be added dynamically -->
-                                </div>
-                                
-                                <!-- Load More Button -->
-                                <div class="text-center mt-4 mb-3">
-                                    <button class="btn btn-outline-primary" id="load-more-news">
-                                        <i class="fas fa-plus-circle me-2"></i>Load More
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Real-Time Price Updates -->
-                            <div class="content-card mt-4" id="real-time-updates" style="display: none;">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-chart-line me-2"></i>Real-Time Price Updates</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div>
-                                            <h4 id="rt-company-name">Company Name</h4>
-                                            <p class="text-muted" id="rt-company-ticker">TICKER</p>
-                                        </div>
-                                        <div class="text-end">
-                                            <h4 id="rt-current-price">$0.00</h4>
-                                            <p id="rt-price-change" class="mb-0">0.00 (0.00%)</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="real-time-chart-container">
-                                        <canvas id="real-time-chart"></canvas>
-                                    </div>
-                                    
-                                    <div class="d-flex justify-content-between mt-3">
-                                        <div class="real-time-stat">
-                                            <span class="stat-label">Open</span>
-                                            <span class="stat-value" id="rt-open">$0.00</span>
-                                        </div>
-                                        <div class="real-time-stat">
-                                            <span class="stat-label">High</span>
-                                            <span class="stat-value" id="rt-high">$0.00</span>
-                                        </div>
-                                        <div class="real-time-stat">
-                                            <span class="stat-label">Low</span>
-                                            <span class="stat-value" id="rt-low">$0.00</span>
-                                        </div>
-                                        <div class="real-time-stat">
-                                            <span class="stat-label">Volume</span>
-                                            <span class="stat-value" id="rt-volume">0</span>
-                                        </div>
-                                        <div class="real-time-stat">
-                                            <span class="stat-label">Mkt Cap</span>
-                                            <span class="stat-value" id="rt-market-cap">$0.00B</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="alert alert-info mt-3 small">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        Price updates every minute during market hours. Last updated: <span id="rt-last-updated">-</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                  </div>
+                  <div class="card-body">
+                    <div class="tabs">
+                      <ul
+                        class="nav nav-tabs"
+                        id="decompositionTabs"
+                        role="tablist"
+                      >
+                        <li class="nav-item" role="presentation">
+                          <button
+                            class="nav-link active"
+                            id="trend-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#trend-content"
+                            type="button"
+                            role="tab"
+                          >
+                            Trend
+                          </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button
+                            class="nav-link"
+                            id="seasonal-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#seasonal-content"
+                            type="button"
+                            role="tab"
+                          >
+                            Seasonality
+                          </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button
+                            class="nav-link"
+                            id="residual-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#residual-content"
+                            type="button"
+                            role="tab"
+                          >
+                            Residuals
+                          </button>
+                        </li>
+                      </ul>
 
-        <!-- About Section -->
-        <section id="about-section" class="section-page">
-            <div class="container py-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-10">
-                        <div class="section-title text-center mb-5" data-aos="fade-up">
-                            <h2 class="display-4 fw-bold"><i class="fas fa-chart-line text-primary me-3"></i>About StockVision Pro</h2>
-                            <div class="title-underline"></div>
-                            <p class="lead mt-3">Advanced AI-powered stock market analysis and prediction platform</p>
+                      <div class="tab-content" id="decompositionTabContent">
+                        <div
+                          class="tab-pane fade show active"
+                          id="trend-content"
+                          role="tabpanel"
+                        >
+                          <div id="trend-plot" class="plot-container"></div>
                         </div>
+                        <div
+                          class="tab-pane fade"
+                          id="seasonal-content"
+                          role="tabpanel"
+                        >
+                          <div id="seasonal-plot" class="plot-container"></div>
+                        </div>
+                        <div
+                          class="tab-pane fade"
+                          id="residual-content"
+                          role="tabpanel"
+                        >
+                          <div id="residual-plot" class="plot-container"></div>
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-                
-                <div class="row g-4">
-                    <!-- What is Stock Market Forecasting -->
-                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-                        <div class="about-card">
-                            <div class="about-card-icon">
-                                <i class="fas fa-lightbulb"></i>
-                            </div>
-                            <div class="about-card-body">
-                                <h3>What is Stock Market Forecasting?</h3>
-                                <p>Stock market forecasting is the process of predicting future stock prices and market trends using historical data, mathematical models, and other relevant information. Our platform combines advanced machine learning algorithms with technical analysis to provide accurate predictions and insights.</p>
-                                <div class="divider-gradient my-3"></div>
-                                <p class="about-highlight"><i class="fas fa-quote-left me-2"></i>The goal is not to predict the exact price, but rather the trend direction and potential market movements</p>
-                            </div>
-                        </div>
+
+                <!-- Model Section -->
+                <div
+                  class="content-card"
+                  id="model-section"
+                  style="display: none"
+                  data-aos="fade-up"
+                >
+                  <div class="card-header">
+                    <h3 id="model-title">
+                      <i class="fas fa-brain me-2"></i>Model Results
+                    </h3>
+                  </div>
+                  <div class="card-body">
+                    <!-- Advanced loading spinner -->
+                    <div
+                      id="model-loading"
+                      class="spinner-container"
+                      style="display: none"
+                    >
+                      <div class="fancy-spinner">
+                        <div class="ring"></div>
+                        <div class="ring"></div>
+                        <div class="ring"></div>
+                        <div class="dot"></div>
+                      </div>
+                      <p class="mt-3 text-center" id="model-loading-text">
+                        Training model...
+                      </p>
+                      <div class="loading-progress">
+                        <div
+                          class="loading-progress-bar"
+                          id="model-progress-bar"
+                        ></div>
+                      </div>
                     </div>
-                    
-                    <!-- How this Application Works -->
-                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-                        <div class="about-card">
-                            <div class="about-card-icon">
-                                <i class="fas fa-cogs"></i>
-                            </div>
-                            <div class="about-card-body">
-                                <h3>How This Application Works</h3>
-                                <p>StockVision Pro fetches real-time and historical stock price data from trusted financial APIs (Stooq and Yahoo Finance). Our multi-model AI system analyzes this data using various time series forecasting algorithms, providing comprehensive insights and predictions to help you make data-driven investment decisions.</p>
-                                <div class="data-flow-diagram">
-                                    <div class="flow-step"><i class="fas fa-database"></i> Data Collection</div>
-                                    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
-                                    <div class="flow-step"><i class="fas fa-chart-bar"></i> Processing</div>
-                                    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
-                                    <div class="flow-step"><i class="fas fa-robot"></i> AI Analysis</div>
-                                    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
-                                    <div class="flow-step"><i class="fas fa-chart-line"></i> Prediction</div>
-                                </div>
-                            </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="row metrics-row" id="metrics-section">
+                      <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                          <h5>MAE</h5>
+                          <p id="mae-value"></p>
                         </div>
-                    </div>
-                    
-                    <!-- AI Models Used -->
-                    <div class="col-12" data-aos="fade-up" data-aos-delay="300">
-                        <div class="about-card">
-                            <div class="about-card-icon">
-                                <i class="fas fa-brain"></i>
-                            </div>
-                            <div class="about-card-body">
-                                <h3>AI Models Powering Our Predictions</h3>
-                                <p>We implement multiple sophisticated AI models to provide diverse perspectives and robust predictions:</p>
-                                
-                                <div class="row models-container g-4 mt-2">
-                                    <div class="col-md-4">
-                                        <div class="model-card" id="transformer-model-card">
-                                            <div class="model-icon"><i class="fas fa-network-wired"></i></div>
-                                            <h4>Transformer</h4>
-                                            <p>Advanced neural network architecture using self-attention mechanisms to capture complex temporal patterns in stock data. Excellent at identifying long-range dependencies and market trends.</p>
-                                            <div class="model-stats">
-                                                <div class="stat">
-                                                    <span class="stat-label">Strengths</span>
-                                                    <span class="stat-value">Pattern Recognition, Long-term Context</span>
-                                                </div>
-                                                <div class="stat">
-                                                    <span class="stat-label">Best For</span>
-                                                    <span class="stat-value">Volatile Markets</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-4">
-                                        <div class="model-card" id="lstm-model-card">
-                                            <div class="model-icon"><i class="fas fa-memory"></i></div>
-                                            <h4>LSTM</h4>
-                                            <p>Long Short-Term Memory networks are specialized recurrent neural networks capable of learning and remembering patterns over extended sequences. Ideal for tracking market trends and cyclical patterns.</p>
-                                            <div class="model-stats">
-                                                <div class="stat">
-                                                    <span class="stat-label">Strengths</span>
-                                                    <span class="stat-value">Sequence Learning, Memory</span>
-                                                </div>
-                                                <div class="stat">
-                                                    <span class="stat-label">Best For</span>
-                                                    <span class="stat-value">Trend Following</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-4">
-                                        <div class="model-card" id="prophet-model-card">
-                                            <div class="model-icon"><i class="fas fa-chart-area"></i></div>
-                                            <h4>Prophet</h4>
-                                            <p>Facebook's advanced time series forecasting model excels at decomposing data into trend, seasonality, and holiday effects. Provides both point predictions and confidence intervals for better risk assessment.</p>
-                                            <div class="model-stats">
-                                                <div class="stat">
-                                                    <span class="stat-label">Strengths</span>
-                                                    <span class="stat-value">Seasonality Detection, Robust Forecasting</span>
-                                                </div>
-                                                <div class="stat">
-                                                    <span class="stat-label">Best For</span>
-                                                    <span class="stat-value">Seasonal Stocks</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                      </div>
+                      <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                          <h5>MSE</h5>
+                          <p id="mse-value"></p>
                         </div>
-                    </div>
-                    
-                    <!-- Technical Analysis -->
-                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
-                        <div class="about-card">
-                            <div class="about-card-icon">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <div class="about-card-body">
-                                <h3>Technical Analysis Tools</h3>
-                                <p>Our platform includes comprehensive technical indicators to complement AI predictions:</p>
-                                
-                                <div class="indicators-grid">
-                                    <div class="indicator-item">
-                                        <div class="indicator-icon"><i class="fas fa-chart-line"></i></div>
-                                        <div class="indicator-text">
-                                            <h5>Moving Averages</h5>
-                                            <p>Smooth price data to identify trends</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="indicator-item">
-                                        <div class="indicator-icon"><i class="fas fa-expand-alt"></i></div>
-                                        <div class="indicator-text">
-                                            <h5>Bollinger Bands</h5>
-                                            <p>Measure market volatility</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="indicator-item">
-                                        <div class="indicator-icon"><i class="fas fa-signal"></i></div>
-                                        <div class="indicator-text">
-                                            <h5>RSI</h5>
-                                            <p>Identify overbought/oversold conditions</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="indicator-item">
-                                        <div class="indicator-icon"><i class="fas fa-arrows-alt-v"></i></div>
-                                        <div class="indicator-text">
-                                            <h5>Support & Resistance</h5>
-                                            <p>Key price levels for decision making</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="indicator-item">
-                                        <div class="indicator-icon"><i class="fas fa-wave-square"></i></div>
-                                        <div class="indicator-text">
-                                            <h5>MACD</h5>
-                                            <p>Identify momentum and trend changes</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                      </div>
+                      <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                          <h5>RMSE</h5>
+                          <p id="rmse-value"></p>
                         </div>
-                    </div>
-                    
-                    <!-- Technologies Used -->
-                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
-                        <div class="about-card">
-                            <div class="about-card-icon">
-                                <i class="fas fa-code"></i>
-                            </div>
-                            <div class="about-card-body">
-                                <h3>Technologies Powering This Platform</h3>
-                                
-                                <div class="tech-tabs">
-                                    <ul class="nav nav-pills mb-3" id="tech-tabs" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="frontend-tab" data-bs-toggle="pill" data-bs-target="#frontend" type="button" role="tab">Frontend</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="backend-tab" data-bs-toggle="pill" data-bs-target="#backend" type="button" role="tab">Backend</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="ai-tab" data-bs-toggle="pill" data-bs-target="#ai" type="button" role="tab">AI & ML</button>
-                                        </li>
-                                    </ul>
-                                    
-                                    <div class="tab-content" id="tech-content">
-                                        <div class="tab-pane fade show active" id="frontend" role="tabpanel">
-                                            <div class="tech-grid">
-                                                <div class="tech-item"><i class="fab fa-html5 fa-lg"></i> HTML5</div>
-                                                <div class="tech-item"><i class="fab fa-css3-alt fa-lg"></i> CSS3</div>
-                                                <div class="tech-item"><i class="fab fa-js fa-lg"></i> JavaScript</div>
-                                                <div class="tech-item"><i class="fab fa-bootstrap fa-lg"></i> Bootstrap 5</div>
-                                                <div class="tech-item"><i class="fas fa-chart-line fa-lg"></i> Plotly.js</div>
-                                                <div class="tech-item"><i class="fas fa-chart-pie fa-lg"></i> Chart.js</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="tab-pane fade" id="backend" role="tabpanel">
-                                            <div class="tech-grid">
-                                                <div class="tech-item"><i class="fab fa-python fa-lg"></i> Python</div>
-                                                <div class="tech-item"><i class="fab fa-flask fa-lg"></i> Flask</div>
-                                                <div class="tech-item"><i class="fas fa-database fa-lg"></i> SQLite</div>
-                                                <div class="tech-item"><i class="fas fa-table fa-lg"></i> Pandas</div>
-                                                <div class="tech-item"><i class="fas fa-square-root-alt fa-lg"></i> NumPy</div>
-                                                <div class="tech-item"><i class="fas fa-server fa-lg"></i> REST APIs</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="tab-pane fade" id="ai" role="tabpanel">
-                                            <div class="tech-grid">
-                                                <div class="tech-item"><i class="fab fa-tensorflow fa-lg"></i> TensorFlow</div>
-                                                <div class="tech-item"><i class="fas fa-brain fa-lg"></i> Keras</div>
-                                                <div class="tech-item"><i class="fas fa-project-diagram fa-lg"></i> Prophet</div>
-                                                <div class="tech-item"><i class="fas fa-chart-bar fa-lg"></i> StatsModels</div>
-                                                <div class="tech-item"><i class="fas fa-calculator fa-lg"></i> SciPy</div>
-                                                <div class="tech-item"><i class="fas fa-cogs fa-lg"></i> Scikit-learn</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                      </div>
+                      <div class="col-md-3 col-sm-6">
+                        <div class="metric-card">
+                          <h5>R² Score</h5>
+                          <p id="r2-value"></p>
                         </div>
+                      </div>
                     </div>
+
+                    <!-- Model Plots -->
+                    <div id="prediction-plot" class="plot-container"></div>
+                    <div
+                      id="components-plot"
+                      class="plot-container"
+                      style="display: none"
+                    ></div>
+                  </div>
                 </div>
-                
-                <!-- Disclaimer and Call to Action -->
-                <div class="row mt-5">
-                    <div class="col-12 text-center" data-aos="fade-up" data-aos-delay="600">
-                        <div class="about-disclaimer">
-                            <div class="disclaimer-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                            <p>This application is for educational and research purposes only. The predictions and analyses provided should not be considered as financial advice. Always consult with a qualified financial advisor before making investment decisions.</p>
-                        </div>
-                        
-                        <div class="cta-container mt-5">
-                            <h3>Ready to explore stock predictions?</h3>
-                            <button class="btn btn-primary btn-lg mt-3" onclick="activateSection('forecast-section')">
-                                <i class="fas fa-chart-line me-2"></i>Start Forecasting Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- News Section -->
+      <section id="news-section" class="section-page">
+        <div class="container">
+          <div class="row">
+            <!-- Sidebar for News -->
+            <div class="col-lg-3">
+              <div class="news-sidebar">
+                <div class="sidebar-header" data-aos="fade-right">
+                  <h3><i class="fas fa-newspaper me-2"></i>Company News</h3>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  data-aos="fade-right"
+                  data-aos-delay="100"
+                >
+                  <h4><i class="fas fa-search me-2"></i>Company Lookup</h4>
+                  <div class="mb-3">
+                    <label for="ticker-search" class="form-label"
+                      >Select Company</label
+                    >
+                    <select class="form-select mb-2" id="news-ticker-select">
+                      <option value="AAPL.US">Apple (AAPL.US)</option>
+                      <option value="MSFT.US">Microsoft (MSFT.US)</option>
+                      <option value="GOOG.US">Google (GOOG.US)</option>
+                      <option value="META.US">Meta (META.US)</option>
+                      <option value="TSLA.US">Tesla (TSLA.US)</option>
+                      <option value="NVDA.US">NVIDIA (NVDA.US)</option>
+                      <option value="ADBE.US">Adobe (ADBE.US)</option>
+                      <option value="PYPL.US">PayPal (PYPL.US)</option>
+                      <option value="INTC.US">Intel (INTC.US)</option>
+                      <option value="CMCSA.US">Comcast (CMCSA.US)</option>
+                      <option value="NFLX.US">Netflix (NFLX.US)</option>
+                      <option value="PEP.US">PepsiCo (PEP.US)</option>
+                    </select>
+                    <div class="input-group custom-ticker-input">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="custom-ticker"
+                        placeholder="Custom ticker symbol..."
+                      />
+                      <button
+                        class="btn btn-outline-primary"
+                        type="button"
+                        id="use-custom-ticker"
+                      >
+                        Use
+                      </button>
+                    </div>
+                    <div class="form-text">
+                      Enter a custom ticker if not in the list above.
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  data-aos="fade-right"
+                  data-aos-delay="200"
+                >
+                  <h4><i class="fas fa-filter me-2"></i>News Filters</h4>
+                  <div class="mb-3">
+                    <label for="news-date-range" class="form-label"
+                      >Date Range</label
+                    >
+                    <select class="form-select" id="news-date-range">
+                      <option value="1">Last 24 hours</option>
+                      <option value="7" selected>Last 7 days</option>
+                      <option value="30">Last 30 days</option>
+                      <option value="90">Last 3 months</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="news-category" class="form-label"
+                      >Category</label
+                    >
+                    <select class="form-select" id="news-category">
+                      <option value="all" selected>All News</option>
+                      <option value="general">General</option>
+                      <option value="financial">Financial</option>
+                      <option value="business">Business</option>
+                      <option value="technology">Technology</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  data-aos="fade-right"
+                  data-aos-delay="300"
+                >
+                  <button class="btn btn-primary w-100" id="fetch-news-btn">
+                    <i class="fas fa-sync-alt me-2"></i>Get News
+                  </button>
+                </div>
+
+                <div
+                  class="sidebar-section"
+                  data-aos="fade-right"
+                  data-aos-delay="400"
+                >
+                  <h4>
+                    <i class="fas fa-chart-pie me-2"></i>Sentiment Analysis
+                  </h4>
+                  <div class="sentiment-chart-container">
+                    <canvas id="sentiment-chart"></canvas>
+                  </div>
+                  <div class="text-center mt-2 small" id="sentiment-summary">
+                    <!-- Sentiment summary will be added dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main News Content -->
+            <div class="col-lg-9">
+              <div class="news-content" data-aos="fade-up">
+                <div class="section-header">
+                  <h2>
+                    <i class="fas fa-newspaper me-2"></i>Latest Company News
+                  </h2>
+                  <p>Stay updated with the latest news and developments</p>
+                </div>
+
+                <!-- News Loading State -->
+                <div
+                  id="news-loading"
+                  class="text-center p-5"
+                  style="display: none"
+                >
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="mt-3">Fetching the latest news...</p>
+                </div>
+
+                <!-- News Error State -->
+                <div
+                  id="news-error"
+                  class="alert alert-danger"
+                  style="display: none"
+                >
+                  <i class="fas fa-exclamation-circle me-2"></i>
+                  <span id="news-error-message"
+                    >Unable to fetch news. Please try again later.</span
+                  >
+                </div>
+
+                <!-- Empty State -->
+                <div
+                  id="news-empty"
+                  class="text-center p-5"
+                  style="display: none"
+                >
+                  <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                  <h4>No News Found</h4>
+                  <p>
+                    There are no recent news articles for this company in the
+                    selected time period.
+                  </p>
+                  <button
+                    class="btn btn-outline-primary mt-3"
+                    id="try-different-filters"
+                  >
+                    Try Different Filters
+                  </button>
+                </div>
+
+                <!-- News Results -->
+                <div id="news-results" style="display: none">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-4"
+                  >
+                    <div class="news-stats">
+                      <span class="badge bg-primary" id="news-count"
+                        >0 articles</span
+                      >
+                      <span class="text-muted" id="news-company"></span>
+                    </div>
+                    <div class="news-sort">
+                      <label class="me-2">Sort by:</label>
+                      <select
+                        class="form-select form-select-sm d-inline-block w-auto"
+                        id="news-sort"
+                      >
+                        <option value="date">Date (Newest)</option>
+                        <option value="relevance">Relevance</option>
+                        <option value="sentiment">Sentiment</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- News Articles Container -->
+                  <div id="news-articles" class="news-articles-grid">
+                    <!-- News articles will be added dynamically -->
+                  </div>
+
+                  <!-- Load More Button -->
+                  <div class="text-center mt-4 mb-3">
+                    <button class="btn btn-outline-primary" id="load-more-news">
+                      <i class="fas fa-plus-circle me-2"></i>Load More
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Real-Time Price Updates -->
+                <div
+                  class="content-card mt-4"
+                  id="real-time-updates"
+                  style="display: none"
+                >
+                  <div class="card-header">
+                    <h3>
+                      <i class="fas fa-chart-line me-2"></i>Real-Time Price
+                      Updates
+                    </h3>
+                  </div>
+                  <div class="card-body">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-3"
+                    >
+                      <div>
+                        <h4 id="rt-company-name">Company Name</h4>
+                        <p class="text-muted" id="rt-company-ticker">TICKER</p>
+                      </div>
+                      <div class="text-end">
+                        <h4 id="rt-current-price">$0.00</h4>
+                        <p id="rt-price-change" class="mb-0">0.00 (0.00%)</p>
+                      </div>
+                    </div>
+
+                    <div class="real-time-chart-container">
+                      <canvas id="real-time-chart"></canvas>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                      <div class="real-time-stat">
+                        <span class="stat-label">Open</span>
+                        <span class="stat-value" id="rt-open">$0.00</span>
+                      </div>
+                      <div class="real-time-stat">
+                        <span class="stat-label">High</span>
+                        <span class="stat-value" id="rt-high">$0.00</span>
+                      </div>
+                      <div class="real-time-stat">
+                        <span class="stat-label">Low</span>
+                        <span class="stat-value" id="rt-low">$0.00</span>
+                      </div>
+                      <div class="real-time-stat">
+                        <span class="stat-label">Volume</span>
+                        <span class="stat-value" id="rt-volume">0</span>
+                      </div>
+                      <div class="real-time-stat">
+                        <span class="stat-label">Mkt Cap</span>
+                        <span class="stat-value" id="rt-market-cap"
+                          >$0.00B</span
+                        >
+                      </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3 small">
+                      <i class="fas fa-info-circle me-2"></i>
+                      Price updates every minute during market hours. Last
+                      updated: <span id="rt-last-updated">-</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about-section" class="section-page">
+        <div class="container py-5">
+          <div class="row justify-content-center">
+            <div class="col-lg-10">
+              <div class="section-title text-center mb-5" data-aos="fade-up">
+                <h2 class="display-4 fw-bold">
+                  <i class="fas fa-chart-line text-primary me-3"></i>About
+                  StockVision Pro
+                </h2>
+                <div class="title-underline"></div>
+                <p class="lead mt-3">
+                  Advanced AI-powered stock market analysis and prediction
+                  platform
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <!-- What is Stock Market Forecasting -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+              <div class="about-card">
+                <div class="about-card-icon">
+                  <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="about-card-body">
+                  <h3>What is Stock Market Forecasting?</h3>
+                  <p>
+                    Stock market forecasting is the process of predicting future
+                    stock prices and market trends using historical data,
+                    mathematical models, and other relevant information. Our
+                    platform combines advanced machine learning algorithms with
+                    technical analysis to provide accurate predictions and
+                    insights.
+                  </p>
+                  <div class="divider-gradient my-3"></div>
+                  <p class="about-highlight">
+                    <i class="fas fa-quote-left me-2"></i>The goal is not to
+                    predict the exact price, but rather the trend direction and
+                    potential market movements
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- How this Application Works -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+              <div class="about-card">
+                <div class="about-card-icon">
+                  <i class="fas fa-cogs"></i>
+                </div>
+                <div class="about-card-body">
+                  <h3>How This Application Works</h3>
+                  <p>
+                    StockVision Pro fetches real-time and historical stock price
+                    data from trusted financial APIs (Stooq and Yahoo Finance).
+                    Our multi-model AI system analyzes this data using various
+                    time series forecasting algorithms, providing comprehensive
+                    insights and predictions to help you make data-driven
+                    investment decisions.
+                  </p>
+                  <div class="data-flow-diagram">
+                    <div class="flow-step">
+                      <i class="fas fa-database"></i> Data Collection
+                    </div>
+                    <div class="flow-arrow">
+                      <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="flow-step">
+                      <i class="fas fa-chart-bar"></i> Processing
+                    </div>
+                    <div class="flow-arrow">
+                      <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="flow-step">
+                      <i class="fas fa-robot"></i> AI Analysis
+                    </div>
+                    <div class="flow-arrow">
+                      <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="flow-step">
+                      <i class="fas fa-chart-line"></i> Prediction
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Models Used -->
+            <div class="col-12" data-aos="fade-up" data-aos-delay="300">
+              <div class="about-card">
+                <div class="about-card-icon">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="about-card-body">
+                  <h3>AI Models Powering Our Predictions</h3>
+                  <p>
+                    We implement multiple sophisticated AI models to provide
+                    diverse perspectives and robust predictions:
+                  </p>
+
+                  <div class="row models-container g-4 mt-2">
+                    <div class="col-md-4">
+                      <div class="model-card" id="transformer-model-card">
+                        <div class="model-icon">
+                          <i class="fas fa-network-wired"></i>
+                        </div>
+                        <h4>Transformer</h4>
+                        <p>
+                          Advanced neural network architecture using
+                          self-attention mechanisms to capture complex temporal
+                          patterns in stock data. Excellent at identifying
+                          long-range dependencies and market trends.
+                        </p>
+                        <div class="model-stats">
+                          <div class="stat">
+                            <span class="stat-label">Strengths</span>
+                            <span class="stat-value"
+                              >Pattern Recognition, Long-term Context</span
+                            >
+                          </div>
+                          <div class="stat">
+                            <span class="stat-label">Best For</span>
+                            <span class="stat-value">Volatile Markets</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="model-card" id="lstm-model-card">
+                        <div class="model-icon">
+                          <i class="fas fa-memory"></i>
+                        </div>
+                        <h4>LSTM</h4>
+                        <p>
+                          Long Short-Term Memory networks are specialized
+                          recurrent neural networks capable of learning and
+                          remembering patterns over extended sequences. Ideal
+                          for tracking market trends and cyclical patterns.
+                        </p>
+                        <div class="model-stats">
+                          <div class="stat">
+                            <span class="stat-label">Strengths</span>
+                            <span class="stat-value"
+                              >Sequence Learning, Memory</span
+                            >
+                          </div>
+                          <div class="stat">
+                            <span class="stat-label">Best For</span>
+                            <span class="stat-value">Trend Following</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="model-card" id="prophet-model-card">
+                        <div class="model-icon">
+                          <i class="fas fa-chart-area"></i>
+                        </div>
+                        <h4>Prophet</h4>
+                        <p>
+                          Facebook's advanced time series forecasting model
+                          excels at decomposing data into trend, seasonality,
+                          and holiday effects. Provides both point predictions
+                          and confidence intervals for better risk assessment.
+                        </p>
+                        <div class="model-stats">
+                          <div class="stat">
+                            <span class="stat-label">Strengths</span>
+                            <span class="stat-value"
+                              >Seasonality Detection, Robust Forecasting</span
+                            >
+                          </div>
+                          <div class="stat">
+                            <span class="stat-label">Best For</span>
+                            <span class="stat-value">Seasonal Stocks</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Technical Analysis -->
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
+              <div class="about-card">
+                <div class="about-card-icon">
+                  <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="about-card-body">
+                  <h3>Technical Analysis Tools</h3>
+                  <p>
+                    Our platform includes comprehensive technical indicators to
+                    complement AI predictions:
+                  </p>
+
+                  <div class="indicators-grid">
+                    <div class="indicator-item">
+                      <div class="indicator-icon">
+                        <i class="fas fa-chart-line"></i>
+                      </div>
+                      <div class="indicator-text">
+                        <h5>Moving Averages</h5>
+                        <p>Smooth price data to identify trends</p>
+                      </div>
+                    </div>
+
+                    <div class="indicator-item">
+                      <div class="indicator-icon">
+                        <i class="fas fa-expand-alt"></i>
+                      </div>
+                      <div class="indicator-text">
+                        <h5>Bollinger Bands</h5>
+                        <p>Measure market volatility</p>
+                      </div>
+                    </div>
+
+                    <div class="indicator-item">
+                      <div class="indicator-icon">
+                        <i class="fas fa-signal"></i>
+                      </div>
+                      <div class="indicator-text">
+                        <h5>RSI</h5>
+                        <p>Identify overbought/oversold conditions</p>
+                      </div>
+                    </div>
+
+                    <div class="indicator-item">
+                      <div class="indicator-icon">
+                        <i class="fas fa-arrows-alt-v"></i>
+                      </div>
+                      <div class="indicator-text">
+                        <h5>Support & Resistance</h5>
+                        <p>Key price levels for decision making</p>
+                      </div>
+                    </div>
+
+                    <div class="indicator-item">
+                      <div class="indicator-icon">
+                        <i class="fas fa-wave-square"></i>
+                      </div>
+                      <div class="indicator-text">
+                        <h5>MACD</h5>
+                        <p>Identify momentum and trend changes</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Technologies Used -->
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
+              <div class="about-card">
+                <div class="about-card-icon">
+                  <i class="fas fa-code"></i>
+                </div>
+                <div class="about-card-body">
+                  <h3>Technologies Powering This Platform</h3>
+
+                  <div class="tech-tabs">
+                    <ul
+                      class="nav nav-pills mb-3"
+                      id="tech-tabs"
+                      role="tablist"
+                    >
+                      <li class="nav-item" role="presentation">
+                        <button
+                          class="nav-link active"
+                          id="frontend-tab"
+                          data-bs-toggle="pill"
+                          data-bs-target="#frontend"
+                          type="button"
+                          role="tab"
+                        >
+                          Frontend
+                        </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button
+                          class="nav-link"
+                          id="backend-tab"
+                          data-bs-toggle="pill"
+                          data-bs-target="#backend"
+                          type="button"
+                          role="tab"
+                        >
+                          Backend
+                        </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button
+                          class="nav-link"
+                          id="ai-tab"
+                          data-bs-toggle="pill"
+                          data-bs-target="#ai"
+                          type="button"
+                          role="tab"
+                        >
+                          AI & ML
+                        </button>
+                      </li>
+                    </ul>
+
+                    <div class="tab-content" id="tech-content">
+                      <div
+                        class="tab-pane fade show active"
+                        id="frontend"
+                        role="tabpanel"
+                      >
+                        <div class="tech-grid">
+                          <div class="tech-item">
+                            <i class="fab fa-html5 fa-lg"></i> HTML5
+                          </div>
+                          <div class="tech-item">
+                            <i class="fab fa-css3-alt fa-lg"></i> CSS3
+                          </div>
+                          <div class="tech-item">
+                            <i class="fab fa-js fa-lg"></i> JavaScript
+                          </div>
+                          <div class="tech-item">
+                            <i class="fab fa-bootstrap fa-lg"></i> Bootstrap 5
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-chart-line fa-lg"></i> Plotly.js
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-chart-pie fa-lg"></i> Chart.js
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="tab-pane fade" id="backend" role="tabpanel">
+                        <div class="tech-grid">
+                          <div class="tech-item">
+                            <i class="fab fa-python fa-lg"></i> Python
+                          </div>
+                          <div class="tech-item">
+                            <i class="fab fa-flask fa-lg"></i> Flask
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-database fa-lg"></i> SQLite
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-table fa-lg"></i> Pandas
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-square-root-alt fa-lg"></i> NumPy
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-server fa-lg"></i> REST APIs
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="tab-pane fade" id="ai" role="tabpanel">
+                        <div class="tech-grid">
+                          <div class="tech-item">
+                            <i class="fab fa-tensorflow fa-lg"></i> TensorFlow
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-brain fa-lg"></i> Keras
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-project-diagram fa-lg"></i> Prophet
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-chart-bar fa-lg"></i> StatsModels
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-calculator fa-lg"></i> SciPy
+                          </div>
+                          <div class="tech-item">
+                            <i class="fas fa-cogs fa-lg"></i> Scikit-learn
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Disclaimer and Call to Action -->
+          <div class="row mt-5">
+            <div
+              class="col-12 text-center"
+              data-aos="fade-up"
+              data-aos-delay="600"
+            >
+              <div class="about-disclaimer">
+                <div class="disclaimer-icon">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p>
+                  This application is for educational and research purposes
+                  only. The predictions and analyses provided should not be
+                  considered as financial advice. Always consult with a
+                  qualified financial advisor before making investment
+                  decisions.
+                </p>
+              </div>
+
+              <div class="cta-container mt-5">
+                <h3>Ready to explore stock predictions?</h3>
+                <button
+                  class="btn btn-primary btn-lg mt-3"
+                  onclick="activateSection('forecast-section')"
+                >
+                  <i class="fas fa-chart-line me-2"></i>Start Forecasting Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-    
+
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <span>&copy; 2025 StockVision Pro | All rights reserved</span>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <span>&copy; 2025 StockVision Pro | All rights reserved</span>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <div class="social-links">
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-linkedin"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
             </div>
+          </div>
         </div>
+      </div>
     </footer>
-    
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle" id="theme-toggle">
-        <i class="fas fa-moon"></i>
-    </div>
-    
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" style="display:none;">
-        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
-            <span class="visually-hidden">Loading...</span>
+
+    <!-- Global Loading Spinner -->
+    <div id="global-loading-spinner">
+      <div class="global-spinner-container">
+        <div class="global-spinner">
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
-        <p>Processing data, please wait...</p>
+        <div class="global-spinner-text">Loading...</div>
+      </div>
     </div>
-    
-    <!-- JavaScript Dependencies -->
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.0/chartjs-plugin-zoom.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
+
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/news.js') }}"></script>
 
     <script>
-        // Application initialization
-        console.log("StockVision Pro: Application initializing - Version 1.0.2");
-        
-        // Wait for full document load
-        window.addEventListener('load', function() {
-            console.log("Window fully loaded with all resources");
-            
-            // Initialize AOS (Animate on Scroll)
-            AOS.init({
-                duration: 800,
-                easing: 'ease-in-out',
-                once: true
-            });
-            
-            // Make sure we have Chart.js loaded before initializing charts
-            if (typeof Chart === 'undefined') {
-                console.error('Chart.js library not loaded!');
-            } else {
-                console.log('Chart.js library loaded successfully');
-            }
-            
-            // Force a redraw of canvases to ensure they're properly initialized
-            setTimeout(function() {
-                console.log("Forcing canvas redraw for better initialization");
-                const canvases = document.querySelectorAll('canvas');
-                canvases.forEach(canvas => {
-                    const parent = canvas.parentNode;
-                    const nextSibling = canvas.nextSibling;
-                    parent.removeChild(canvas);
-                    parent.insertBefore(canvas, nextSibling);
-                });
-            }, 500);
+      // Application initialization
+      console.log("StockVision Pro: Application initializing - Version 1.0.2");
+
+      // Wait for full document load
+      window.addEventListener("load", function () {
+        console.log("Window fully loaded with all resources");
+
+        // Initialize AOS (Animate on Scroll)
+        AOS.init({
+          duration: 800,
+          easing: "ease-in-out",
+          once: true,
         });
-        
-        // Ensure proper section initialization when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM fully loaded - initializing sections");
-            
-            // Initialize sections
-            const sections = document.querySelectorAll('.section-page');
-            console.log(`Found ${sections.length} sections`);
-            
-            sections.forEach(section => {
-                section.classList.remove('active-section');
-                console.log(`Initialized section: ${section.id}`);
-            });
-            
-            // Activate home section by default
-            const homeSection = document.getElementById('home-section');
-            if (homeSection) {
-                homeSection.classList.add('active-section');
-                console.log("Activated home section");
-            } else {
-                console.error("Home section element not found!");
-            }
-            
-            // Update nav links
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            const homeNavLink = document.getElementById('nav-home');
-            if (homeNavLink) {
-                homeNavLink.classList.add('active');
-            }
-            
-            // Debug message to confirm initialization
-            console.log("Navigation and sections initialized");
-            
-            // Handle direct links to sections (from URL hash)
-            if (window.location.hash) {
-                const targetId = window.location.hash.substring(1);
-                if (document.getElementById(targetId)) {
-                    console.log(`Activating section from URL hash: ${targetId}`);
-                    setTimeout(() => {
-                        activateSection(targetId);
-                    }, 100);
-                }
-            }
+
+        // Make sure we have Chart.js loaded before initializing charts
+        if (typeof Chart === "undefined") {
+          console.error("Chart.js library not loaded!");
+        } else {
+          console.log("Chart.js library loaded successfully");
+        }
+
+        // Force a redraw of canvases to ensure they're properly initialized
+        setTimeout(function () {
+          console.log("Forcing canvas redraw for better initialization");
+          const canvases = document.querySelectorAll("canvas");
+          canvases.forEach((canvas) => {
+            const parent = canvas.parentNode;
+            const nextSibling = canvas.nextSibling;
+            parent.removeChild(canvas);
+            parent.insertBefore(canvas, nextSibling);
+          });
+        }, 500);
+      });
+
+      // Ensure proper section initialization when DOM is ready
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM fully loaded - initializing sections");
+
+        // Initialize sections
+        const sections = document.querySelectorAll(".section-page");
+        console.log(`Found ${sections.length} sections`);
+
+        sections.forEach((section) => {
+          section.classList.remove("active-section");
+          console.log(`Initialized section: ${section.id}`);
         });
+
+        // Activate home section by default
+        const homeSection = document.getElementById("home-section");
+        if (homeSection) {
+          homeSection.classList.add("active-section");
+          console.log("Activated home section");
+        } else {
+          console.error("Home section element not found!");
+        }
+
+        // Update nav links
+        const navLinks = document.querySelectorAll(".nav-link");
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+        });
+
+        const homeNavLink = document.getElementById("nav-home");
+        if (homeNavLink) {
+          homeNavLink.classList.add("active");
+        }
+
+        // Debug message to confirm initialization
+        console.log("Navigation and sections initialized");
+
+        // Handle direct links to sections (from URL hash)
+        if (window.location.hash) {
+          const targetId = window.location.hash.substring(1);
+          if (document.getElementById(targetId)) {
+            console.log(`Activating section from URL hash: ${targetId}`);
+            setTimeout(() => {
+              activateSection(targetId);
+            }, 100);
+          }
+        }
+      });
     </script>
-</body>
-</html> 
+  </body>
+</html>
