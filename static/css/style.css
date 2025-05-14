@@ -39,6 +39,39 @@
   --card-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
 }
 
+/* Dark mode table styles */
+[data-theme="dark"] .table {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .table thead th {
+  background-color: var(--card-header-bg);
+  color: var(--text-color);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .table td {
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .table-bordered {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table-bordered th,
+[data-theme="dark"] .table-bordered td {
+  border-color: var(--border-color);
+}
+
 /* General Styles */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -1593,4 +1626,82 @@ a:hover {
 #real-time-chart {
   width: 100% !important;
   height: 100% !important;
+}
+
+/* Data section styles */
+#data-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Compact table styles */
+.table-responsive {
+  height: 25rem !important;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  background-color: var(--card-bg);
+  position: relative;
+  z-index: 1;
+}
+
+.table-responsive table {
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.table-responsive thead {
+  position: sticky;
+  top: 0;
+  background-color: var(--card-bg);
+  z-index: 2;
+}
+
+.table-responsive th {
+  background-color: var(--card-bg);
+  border-bottom: 2px solid var(--border-color);
+  padding: 8px;
+  font-weight: 600;
+  color: var(--text-color);
+  position: sticky;
+  top: 0;
+}
+
+.table-responsive td {
+  padding: 6px 8px;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-responsive tbody tr:hover {
+  background-color: var(--hover-bg);
+}
+
+/* Custom scrollbar for the table */
+.table-responsive::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Prevent scroll propagation */
+.table-responsive:focus-within {
+  outline: none;
+}
+
+.table-responsive * {
+  pointer-events: auto;
 }

@@ -734,25 +734,19 @@ function showErrorMessage(message) {
 // Display stock data in table
 function displayStockData(data, columns, source = "Stooq") {
   // Add safety check for empty data
-  if (!data || data.length === 0 || !columns || columns.length === 0) {
-    console.error("No data or columns provided to displayStockData");
-    showErrorMessage(
-      "Error: No data available to display. Please try with a different ticker or date range."
-    );
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    console.error("Invalid or empty data received");
+    showErrorMessage("Error: No data available to display");
     return;
   }
 
-  // Add null checks for all elements
+  // Get DOM elements
   const tableHeader = document.getElementById("table-header");
   const tableBody = document.getElementById("table-body");
-  const dataInfo = document.getElementById("data-info");
 
-  // Make sure all elements exist before proceeding
-  if (!tableHeader || !tableBody || !dataInfo) {
-    console.error("One or more table elements not found");
-    showErrorMessage(
-      "Error: Some table elements not found. Please refresh the page and try again."
-    );
+  if (!tableHeader || !tableBody) {
+    console.error("Table elements not found");
+    showErrorMessage("Error: Could not find table elements");
     return;
   }
 
@@ -763,171 +757,57 @@ function displayStockData(data, columns, source = "Stooq") {
 
     // Update the table container structure
     const tableResponsive = document.querySelector(".table-responsive");
-
-    // Check if tableResponsive exists before modifying it
     if (!tableResponsive) {
       console.error("Table responsive container not found");
-      showErrorMessage(
-        "Error: Could not find table container. Please refresh the page and try again."
-      );
+      showErrorMessage("Error: Could not find table container");
       return;
     }
 
-    tableResponsive.className = "data-table-container";
-    tableResponsive.innerHTML = `
-            <div class="data-table-scroll">
-                <table class="table" id="data-table">
-                    <thead>
-                        <tr id="table-header"></tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-            </div>
-            <div class="table-footer" id="table-footer" style="display: none;"></div>
-        `;
+    // Set up the table container with fixed height
+    tableResponsive.style.height = "80px";
+    tableResponsive.style.overflowY = "auto";
+    tableResponsive.style.border = "1px solid var(--border-color)";
+    tableResponsive.style.borderRadius = "4px";
 
-    // Get references to the new elements
-    const newTableHeader = document.getElementById("table-header");
-    const newTableBody = document.getElementById("table-body");
-    const tableFooter = document.getElementById("table-footer");
+    // Create table structure
+    const table = document.createElement("table");
+    table.className = "table table-striped table-hover";
+    table.style.marginBottom = "0";
 
-    // Check if the new elements were created successfully
-    if (!newTableHeader || !newTableBody) {
-      console.error("Failed to create new table elements");
-      showErrorMessage(
-        "Error: Failed to create table. Please refresh the page and try again."
-      );
-      return;
-    }
+    // Create thead with sticky header
+    const thead = document.createElement("thead");
+    thead.style.position = "sticky";
+    thead.style.top = "0";
+    thead.style.backgroundColor = "var(--card-bg)";
+    thead.style.zIndex = "1";
 
-    // Calculate daily changes if we have Open and Close columns
-    let hasChangeColumn = false;
-    if (columns.includes("Close") && columns.includes("Open")) {
-      data.forEach((row, index) => {
-        if (index > 0) {
-          const prevClose = data[index - 1].Close;
-          row.Change = (((row.Close - prevClose) / prevClose) * 100).toFixed(2);
-        } else {
-          row.Change = (((row.Close - row.Open) / row.Open) * 100).toFixed(2);
-        }
-      });
+    // Create tbody
+    const tbody = document.createElement("tbody");
 
-      // Add Change column to columns array if not already there
-      if (!columns.includes("Change")) {
-        columns.push("Change");
-      }
-      hasChangeColumn = true;
-    }
-
-    // Enhance data info with additional details and actions
-    const startDate = new Date(startDateInput.value).toLocaleDateString();
-    const endDate = new Date(endDateInput.value).toLocaleDateString();
-    dataInfo.innerHTML = `
-            <div>
-                <i class="fas fa-info-circle me-2"></i>
-                Data for <strong class="current-company-info">${currentCompany}</strong>
-                <span class="data-count-badge">${data.length} rows</span>
-                <span class="data-source-badge">Source: ${source}</span>
-                <br>
-                <small class="text-muted">Period: ${startDate} to ${endDate}</small>
-            </div>
-            <div class="data-actions">
-                <button class="btn btn-sm btn-outline-primary" id="toggle-all-data">
-                    <i class="fas fa-expand-alt me-1"></i>Show All
-                </button>
-            </div>
-        `;
-
-    // Add event listener for show all button
-    const toggleAllDataBtn = document.getElementById("toggle-all-data");
-    if (toggleAllDataBtn) {
-      toggleAllDataBtn.addEventListener("click", function () {
-        const dataTable = document.querySelector(".data-table-scroll");
-        if (dataTable) {
-          if (dataTable.style.maxHeight === "none") {
-            dataTable.style.maxHeight = "400px";
-            this.innerHTML = '<i class="fas fa-expand-alt me-1"></i>Show All';
-          } else {
-            dataTable.style.maxHeight = "none";
-            this.innerHTML =
-              '<i class="fas fa-compress-alt me-1"></i>Show Less';
-          }
-        }
-      });
-    }
-
-    // Create table header with enhanced styling
+    // Add header row
+    const headerRow = document.createElement("tr");
     columns.forEach((column) => {
       const th = document.createElement("th");
-      // Add sort icon if needed
-      th.innerHTML = `${column} <i class="fas fa-sort text-white-50"></i>`;
-      newTableHeader.appendChild(th);
+      th.textContent = column;
+      headerRow.appendChild(th);
     });
+    thead.appendChild(headerRow);
 
-    // Determine which column is the price column for highlighting
-    const priceColumnIndex =
-      columns.indexOf("Close") !== -1
-        ? columns.indexOf("Close")
-        : columns.indexOf("Adj Close") !== -1
-        ? columns.indexOf("Adj Close")
-        : -1;
-
-    // Display all data rows with enhanced format
-    data.forEach((row, rowIndex) => {
+    // Add data rows
+    data.forEach((row) => {
       const tr = document.createElement("tr");
-
-      columns.forEach((column, colIndex) => {
+      columns.forEach((column) => {
         const td = document.createElement("td");
-
-        // Apply special formatting based on column type
-        if (column === "Date") {
-          // Format date - add try-catch for safer date parsing
-          try {
-            const date = new Date(row[column]);
-            if (!isNaN(date.getTime())) {
-              td.textContent = date.toLocaleDateString();
-            } else {
-              td.textContent = row[column] || "Invalid Date";
-            }
-          } catch (e) {
-            console.error("Error formatting date:", e);
-            td.textContent = row[column] || "Error";
-          }
-        } else if (column === "Change") {
-          // Format percent change with icons
-          const change = parseFloat(row[column]);
-          const changeValue = Math.abs(change).toFixed(2) + "%";
-          const icon =
-            change >= 0
-              ? '<i class="fas fa-caret-up me-1"></i>'
-              : '<i class="fas fa-caret-down me-1"></i>';
-          td.innerHTML = icon + changeValue;
-          td.className = change >= 0 ? "positive-change" : "negative-change";
-        } else {
-          // Format numeric values with proper decimal places
-          if (typeof row[column] === "number") {
-            td.textContent = row[column].toFixed(2);
-
-            // Highlight price column
-            if (colIndex === priceColumnIndex) {
-              td.className = "price-column";
-            }
-          } else {
-            td.textContent = row[column] || "";
-          }
-        }
-
+        td.textContent = row[column] || "";
         tr.appendChild(td);
       });
-
-      newTableBody.appendChild(tr);
+      tbody.appendChild(tr);
     });
 
-    // Add "show more" footer if more than 50 rows
-    if (tableFooter && data.length > 50) {
-      tableFooter.innerHTML = `Showing 50 of ${data.length} rows. Use the "Show All" button to display all data.`;
-      tableFooter.style.display = "block";
-    }
+    // Assemble table
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    tableResponsive.appendChild(table);
   } catch (error) {
     console.error("Error displaying stock data:", error);
     showErrorMessage("Error displaying data: " + error.message);
@@ -1479,30 +1359,31 @@ function displayModelResults(result, modelType) {
   );
 
   // Add prediction summary annotation
-  annotations.push({
-    x: allDates[allDates.length - 1],
-    y: lastPrice,
-    xref: "x",
-    yref: "y",
-    text:
-      `<b>3-Day Forecast Summary</b><br>` +
-      `Day 1: ${changePercents[0]}%<br>` +
-      `Day 2: ${changePercents[1]}%<br>` +
-      `Day 3: ${changePercents[2]}%<br>` +
-      `<i>Relative to last known price</i>`,
-    showarrow: true,
-    arrowhead: 0,
-    arrowsize: 1,
-    arrowwidth: 2,
-    arrowcolor: "#6c757d",
-    ax: -80,
-    ay: -80,
-    bordercolor: "#6c757d",
-    borderwidth: 2,
-    borderpad: 4,
-    bgcolor: "rgba(255, 255, 255, 0.9)",
-    font: { size: 12 },
-  });
+  // (REMOVED 3-Day Forecast Summary annotation as per user request)
+  // annotations.push({
+  //   x: allDates[allDates.length - 1],
+  //   y: lastPrice,
+  //   xref: "x",
+  //   yref: "y",
+  //   text:
+  //     `<b>3-Day Forecast Summary</b><br>` +
+  //     `Day 1: ${changePercents[0]}%<br>` +
+  //     `Day 2: ${changePercents[1]}%<br>` +
+  //     `Day 3: ${changePercents[2]}%<br>` +
+  //     `<i>Relative to last known price</i>`,
+  //   showarrow: true,
+  //   arrowhead: 0,
+  //   arrowsize: 1,
+  //   arrowwidth: 2,
+  //   arrowcolor: "#6c757d",
+  //   ax: -80,
+  //   ay: -80,
+  //   bordercolor: "#6c757d",
+  //   borderwidth: 2,
+  //   borderpad: 4,
+  //   bgcolor: "rgba(255, 255, 255, 0.9)",
+  //   font: { size: 12 },
+  // });
 
   const layout = {
     title: `${modelType} Model: Actual vs Predicted Prices for ${selectedColumn}`,
